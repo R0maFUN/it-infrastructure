@@ -52,9 +52,8 @@ def register_kafka_listener(topic, listener):
     print("Started a background thread")
 
 def kafka_listener(msg):
-    # print("Got msg:\n", data.value.decode("utf-8"))
+    print("Got msg:\n", msg.value.decode("utf-8"))
     transaction = json.loads(msg.value)
-    print("Got transaction: " + transaction)
     product_id = transaction['product_id']
     amount = transaction['amount']
   
