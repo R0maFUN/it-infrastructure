@@ -1,4 +1,5 @@
 import time
+from time import sleep
 from kafka import KafkaProducer
 import random
 import json
