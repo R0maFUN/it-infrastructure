@@ -49,4 +49,4 @@ if __name__ == '__main__':
     delay = 1  # Delay in seconds between each event publication
 
     produce_data(topic, num_events, delay)
-    print("finished sending " + num_events + "events")
+    print(f"finished sending {num_events} events")
