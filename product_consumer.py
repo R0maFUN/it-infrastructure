@@ -11,6 +11,6 @@ for message in consumer:
     product_id = product_event['product_id']
     quantity = product_event['quantity']
 
-    print(f"Got product event {product_event}")
+    print(f"Got product event with product_id={product_id}")
     # Update the database with the product event
     print(f"Updating product {product_id} with quantity {quantity}")
