@@ -1,0 +1,5 @@
+ssh admin@158.160.81.86
+
+bin/zookeeper-server-start.sh config/zookeeper.properties - запуск зукипера
+
+bin/kafka-server-start.sh config/server.properties - запуск кафки
