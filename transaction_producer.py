@@ -47,7 +47,7 @@ if __name__ == '__main__':
     topic = 'transaction_topic_v3'
     print(f" amount = {args.amount}")
     num_events = 1
-    if args.amount > 0:
+    if args.amount:
         num_events = args.amount # Number of transaction events to generate
     delay = 1  # Delay in seconds between each event publication
 
