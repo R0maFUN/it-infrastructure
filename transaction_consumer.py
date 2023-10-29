@@ -1,25 +1,21 @@
-##from kafka import KafkaConsumer
-##import json
-##
-##bootstrap_servers = '158.160.81.86:9092'
-##topic = 'transaction_topic'
-##
-### Create a KafkaConsumer with the desired topic and bootstrap servers
-##consumer = KafkaConsumer(topic, bootstrap_servers=bootstrap_servers)
-##
-### Start consuming messages from the topic
-##for message in consumer:
-##    # Decode the message value assuming it is encoded as UTF-8
-##    event = json.loads(message.value.decode('utf-8'))
-##    
-##    # Process the event
-##    print(event)
-
 from kafka import KafkaConsumer, ConsumerRebalanceListener
+import json
 import threading
 
-BOOTSTRAP_SERVERS = ['158.160.81.86:9092']
+BOOTSTRAP_SERVERS = ['localhost:9092']
 consumer_group_id = 'transaction_consumer_group'
+product_topic = 'product_topic'
+transaction_topic = 'transaction_topic_v3'
+
+consumer = KafkaConsumer(
+    transaction_topic,
+    bootstrap_servers=BOOTSTRAP_SERVERS
+)
+
+producer = KafkaProducer(
+    bootstrap_servers=BOOTSTRAP_SERVERS,
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')  # JSON serialization of messages
+)
 
 class RebalanceListener(ConsumerRebalanceListener):
     def on_partitions_revoked(self, revoked_partitions):
@@ -35,19 +31,19 @@ def register_kafka_listener(topic, listener):
     # Poll kafka
     def poll():
         # Initialize consumer instance with group ID and bootstrap servers
-        consumer = KafkaConsumer(topic,
-                                 bootstrap_servers=BOOTSTRAP_SERVERS,
-                                 group_id=consumer_group_id)
+        # consumer = KafkaConsumer(topic,
+        #                          bootstrap_servers=BOOTSTRAP_SERVERS,
+        #                          group_id=consumer_group_id)
 
         # Subscribe to topics with rebalance listener
-        consumer.subscribe(topics=[topic],
-                           listener=RebalanceListener())  # Add the rebalance listener here
+        #consumer.subscribe(topics=[topic],
+        #                   listener=RebalanceListener())  # Add the rebalance listener here
 
         print("About to start polling for topic:", topic)
         consumer.poll(timeout_ms=6000)
         print("Started Polling for topic:", topic)
         for msg in consumer:
-            print("Entered the loop\nKey: ",msg.key," Value:", msg.value)
+            print("Entered the loop\nKey: ", msg.key, " Value:", msg.value)
             kafka_listener(msg)
 
     print("About to register listener to topic:", topic)
@@ -55,7 +51,17 @@ def register_kafka_listener(topic, listener):
     t1.start()
     print("Started a background thread")
 
-def kafka_listener(data):
-    print("Image Ratings:\n", data.value.decode("utf-8"))
+def kafka_listener(msg):
+    # print("Got msg:\n", data.value.decode("utf-8"))
+    transaction = json.loads(msg.value)
+    print("Got transaction: " + transaction)
+    product_id = transaction['product_id']
+    amount = transaction['amount']
+  
+    product_event = {
+        'product_id': product_id,
+        'quantity': -1
+    }
+    producer.send(product_topic, value=product_event)
 
-register_kafka_listener('transaction_topic_v2', kafka_listener)
+register_kafka_listener(transaction_topic, kafka_listener)

@@ -54,4 +54,31 @@ if __name__ == '__main__':
     delay = 1  # Delay in seconds between each record publication
 
     produce_data(topic, data_type, num_records, delay)
+
+
+
+from kafka import KafkaProducer
+import json
+from kafka.errors import KafkaError
+
+bootstrap_servers = ['158.160.81.86:9092']
+
+producer = KafkaProducer(bootstrap_servers=['158.160.81.86:9092'])
+
+# Asynchronous by default
+future = producer.send('transaction_topic_v3', b'raw_bytes')
+
+# Block for 'synchronous' sends
+try:
+    record_metadata = future.get(timeout=10)
+except KafkaError as ke:
+    # Decide what to do if produce request failed...
+    #log.exception()
+    print("Finished with error: " + ke)
+    pass
+
+# Successful result returns assigned partition and offset
+print (record_metadata.topic)
+print (record_metadata.partition)
+print (record_metadata.offset)
  
