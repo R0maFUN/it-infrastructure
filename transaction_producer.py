@@ -45,8 +45,11 @@ def produce_data(topic, num_events, delay):
 # Main execution
 if __name__ == '__main__':
     topic = 'transaction_topic_v3'
-    num_events = 1  # Number of transaction events to generate
+    print(f" amount = {args.amount}")
+    num_events = 1
+    if args.amount > 0:
+        num_events = args.amount # Number of transaction events to generate
     delay = 1  # Delay in seconds between each event publication
 
-    produce_data(topic, num_events, delay)
+    #produce_data(topic, num_events, delay)
     print(f"finished sending {num_events} events")
