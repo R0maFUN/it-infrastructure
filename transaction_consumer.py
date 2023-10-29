@@ -1,4 +1,4 @@
-from kafka import KafkaConsumer, ConsumerRebalanceListener
+from kafka import KafkaConsumer, KafkaProducer, ConsumerRebalanceListener
 import json
 import threading
 
