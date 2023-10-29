@@ -52,7 +52,7 @@ def register_kafka_listener(topic, listener):
     print("Started a background thread")
 
 def kafka_listener(msg):
-    print("Got msg:\n", msg.value.decode("utf-8"))
+    print(f"Got msg: {msg.value.decode('utf-8')}")
     transaction = json.loads(msg.value)
     product_id = transaction['product_id']
     amount = transaction['amount']
@@ -61,6 +61,7 @@ def kafka_listener(msg):
         'product_id': product_id,
         'quantity': -1
     }
+    print(f"Going to post product_event to {product_topic}")
     producer.send(product_topic, value=product_event)
 
 register_kafka_listener(transaction_topic, kafka_listener)
